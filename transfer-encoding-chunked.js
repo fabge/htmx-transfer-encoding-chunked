@@ -1,48 +1,61 @@
-/*
-Chunked Transfer Extension
-==========================
-This extension adds support for chunked transfer encoding to htmx.
-*/
-
 (function(){
-    /** @type {import("../htmx").HtmxInternalApi} */
-    var api;
+  /** @type {import("../htmx").HtmxInternalApi} */
+  var api;
+  var lastResponseLength = 0;
+  var isComplete = false;
 
-    htmx.defineExtension('chunked-transfer', {
+  htmx.defineExtension('chunked-transfer', {
       init: function(apiRef) {
-        api = apiRef;
+          api = apiRef;
       },
 
       onEvent: function(name, evt) {
-        if (name === "htmx:beforeRequest") {
-          var xhr = evt.detail.xhr;
-          var elt = evt.detail.elt;
+          if (name === "htmx:beforeRequest") {
+              var xhr = evt.detail.xhr;
+              var elt = evt.detail.elt;
 
-          xhr.onprogress = function() {
-            var isChunked = xhr.getResponseHeader("Transfer-Encoding") === "chunked";
+              isComplete = false;
 
-            if (!isChunked) return;
+              xhr.onprogress = function() {
+                  if (isComplete) return;
 
-            var response = xhr.response;
+                  var isChunked = xhr.getResponseHeader("Transfer-Encoding") === "chunked";
+                  if (!isChunked) return;
 
-            api.withExtensions(elt, function(extension) {
-              if (extension.transformResponse) {
-                response = extension.transformResponse(response, xhr, elt);
-              }
-            });
+                  var response = xhr.response;
+                  var newChunk = response.substring(lastResponseLength);
+                  lastResponseLength = response.length;
 
-            var swapSpec = api.getSwapSpecification(elt);
-            var target = api.getTarget(elt);
+                  if (newChunk.trim() === "") return;
 
-            htmx.swap(target, response, {
-              swapStyle: swapSpec.swapStyle,
-              swapDelay: swapSpec.swapDelay,
-              settleDelay: swapSpec.settleDelay,
-              ignoreTitle: true,
-              contextElement: elt
-            });
-          };
-        }
+                  api.withExtensions(elt, function(extension) {
+                      if (extension.transformResponse) {
+                          newChunk = extension.transformResponse(newChunk, xhr, elt);
+                      }
+                  });
+
+                  var swapSpec = api.getSwapSpecification(elt);
+                  var target = api.getTarget(elt);
+
+                  htmx.swap(target, newChunk, {
+                      swapStyle: swapSpec.swapStyle,
+                      swapDelay: swapSpec.swapDelay,
+                      settleDelay: swapSpec.settleDelay,
+                      ignoreTitle: true,
+                      appendOnly: true,
+                      contextElement: elt
+                  });
+              };
+
+              xhr.onload = function() {
+                  isComplete = true;
+              };
+
+              xhr.onloadend = function() {
+                  lastResponseLength = 0;
+                  isComplete = false;
+              };
+          }
       }
-    });
-  })();
+  });
+})();
