@@ -8,14 +8,17 @@ https://github.com/douglasduteil/htmx.ext...chunked-transfer
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx-ext-sse@2.2.2/sse.js"></script>
+<script src="https://unpkg.com/htmx-ext-transfer-encoding-chunked@0.1.0/transfer-encoding-chunked.js"></script>
 ```
 
 ## Usage
 
 ```html
-  <div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
-      Contents of this box will be updated in real time
-      with every SSE message received from the chatroom.
-  </div>
+<body hx-ext="chunked-transfer">
+  ...
+</body>
 ```
+
+## Showcase
+
+![yes, this is dog](dog.gif)
