@@ -1,7 +1,7 @@
 {
     "name": "htmx-ext-transfer-encoding-chunked",
     "main": "transfer-encoding-chunked.js",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "scripts": {
       "lint": "eslint test/ext test",
       "lint-fix": "eslint test/ext test --fix",

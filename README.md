@@ -8,7 +8,7 @@ https://github.com/douglasduteil/htmx.ext...chunked-transfer
 ## Install
 
 ```html
-<script src="https://unpkg.com/htmx-ext-transfer-encoding-chunked@0.2.0/transfer-encoding-chunked.js"></script>
+<script src="https://unpkg.com/htmx-ext-transfer-encoding-chunked@0.3.0/transfer-encoding-chunked.js"></script>
 ```
 
 ## Usage
