@@ -19,7 +19,8 @@
               xhr.onprogress = function() {
                   if (isComplete) return;
 
-                  var isChunked = xhr.getResponseHeader("Transfer-Encoding") === "chunked";
+                  var isChunked = xhr.getResponseHeader("Transfer-Encoding") === "chunked" ||
+                                xhr.getResponseHeader("X-Transfer-Encoding") === "chunked";
                   if (!isChunked) return;
 
                   var response = xhr.response;
